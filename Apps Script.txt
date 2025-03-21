@@ -1,4 +1,3 @@
-// Viral Science www.viralsciencecreativity.com www.youtube.com/c/viralscience
 // Smart Attendance System with Google Sheets and LCD Display
 var ss = SpreadsheetApp.openById('Sheet ID Here'); //Enter your googlesheets URL Id here
 var sheet = ss.getSheetByName('Sheet1');
