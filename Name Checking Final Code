@@ -1,0 +1,87 @@
+#include <SPI.h>
+#include <MFRC522.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+constexpr uint8_t RST_PIN = D3;
+constexpr uint8_t SS_PIN = D4;
+constexpr uint8_t BUZZER_PIN = D8;
+MFRC522 mfrc522(SS_PIN, RST_PIN);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Define known UIDs
+byte uid1[4] = {0xD7, 0x52, 0xF8, 0x03};  // Tag 1 - Prince
+byte uid2[4] = {0x93, 0xDA, 0xFF, 0x2F};  // Tag 2 - Alice
+byte uid3[4] = {0x04, 0x73, 0xF8, 0x03};  // Tag 3 - Bob
+byte uid4[4] = {0xF7, 0x97, 0xF9, 0x03};  // Tag 4 - Charlie
+byte uid5[4] = {0x72, 0x58, 0xF9, 0x03};  // Tag 5 - Diana
+
+void setup() {
+  Serial.begin(9600);
+  SPI.begin();
+  mfrc522.PCD_Init();
+  pinMode(BUZZER_PIN, OUTPUT);
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("Scan your card");
+}
+
+void loop() {
+  if (!mfrc522.PICC_IsNewCardPresent() || !mfrc522.PICC_ReadCardSerial())
+    return;
+
+  String name = getName(mfrc522.uid.uidByte);
+
+  Serial.print("UID: ");
+  for (byte i = 0; i < mfrc522.uid.size; i++) {
+    Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
+    Serial.print(mfrc522.uid.uidByte[i], HEX);
+  }
+  Serial.println();
+if (name == "Unknown") {
+    // Unknown card = 3 beeps
+    for (int i = 0; i < 3; i++) {
+      digitalWrite(BUZZER_PIN, HIGH);
+      delay(100);
+      digitalWrite(BUZZER_PIN, LOW);
+      delay(100);
+    }
+  } else {
+    // Known card = single beep
+    digitalWrite(BUZZER_PIN, HIGH);
+    delay(200);
+    digitalWrite(BUZZER_PIN, LOW);
+  }
+
+  // Display on LCD
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Welcome");
+  lcd.setCursor(0, 1);
+  lcd.print(name);
+  delay(3000);
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Scan your card");
+
+  mfrc522.PICC_HaltA();
+  mfrc522.PCD_StopCrypto1();
+}
+
+bool compareUID(byte *uid, byte *knownUID) {
+  for (byte i = 0; i < 4; i++) {
+    if (uid[i] != knownUID[i]) return false;
+  }
+  return true;
+}
+
+String getName(byte *uid) {
+  if (compareUID(uid, uid1)) return "Rite";
+  else if (compareUID(uid, uid2)) return "Kallyan";
+  else if (compareUID(uid, uid3)) return "Fatema";
+  else if (compareUID(uid, uid4)) return "Jakir";
+  else if (compareUID(uid, uid5)) return "Masrur";
+  else return "Unknown";
+}
