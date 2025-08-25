@@ -1,9 +1,115 @@
-# smart_attendence_system_rfid
-Paste The App Script.txt to google sheets Extentions> App script
-Make Sure to Connect Wifi with Bssid name and Pre-Share Key
-Then Set Name in RFID Name tag,ino file set different name for different rfid card
-Then After setting Each name on RFID card, upload new code to the NodeMCU
-Check Google Sheets for the Result
+# Smart Attendance System (RFID + NodeMCU + Google Sheets)
+
+This project implements a **smart attendance system** using **NodeMCU (ESP8266)**, **RFID module (RC522)**, and an **I2C LCD display**.  
+It identifies users with RFID cards, logs attendance to **Google Sheets**, and provides visual + audio feedback via LCD and buzzer.
+
+---
+
+## 📦 Hardware Requirements
+- **NodeMCU (ESP8266)**  
+- **RFID-RC522 Module**  
+- **I2C 16x2 LCD Display**  
+- **Active Buzzer**  
+- **RFID Tags/Cards (MIFARE Classic 1K or similar)**  
+- Jumper wires and breadboard  
+
+---
+
+## 🔌 Circuit Connections
+
+| Component      | NodeMCU Pin |
+|----------------|-------------|
+| RC522 SDA/SS   | D4          |
+| RC522 RST      | D3          |
+| RC522 MOSI     | D7          |
+| RC522 MISO     | D6          |
+| RC522 SCK      | D5          |
+| Buzzer (+)     | D8          |
+| LCD (I2C) SDA  | D2          |
+| LCD (I2C) SCL  | D1          |
+| GND / VCC      | GND / 3.3V  |
+
+> ⚠️ Note: RC522 RFID reader must be powered from **3.3V** (not 5V).
+
+---
+
+## 🖥️ Software Setup
+
+### 1. Install Arduino IDE
+Download and install from: [Arduino IDE](https://www.arduino.cc/en/software)
+
+### 2. Install ESP8266 Board Package
+- Go to **File → Preferences**  
+- Add the following URL to *Additional Board Manager URLs*:
+
+http://arduino.esp8266.com/stable/package_esp8266com_index.json
+
+- Then install **ESP8266 by ESP8266 Community** via *Tools → Board Manager*.
+
+### 3. Install Required Libraries
+In Arduino IDE, install the following libraries via **Sketch → Include Library → Manage Libraries**:
+- `MFRC522` (by Miguel Balboa) – for RFID module  
+- `LiquidCrystal_I2C` – for LCD display  
+- `ESP8266WiFi` – for Wi-Fi connection  
+- `Wire` & `SPI` (usually pre-installed)  
+
+### 4. Google Sheets Setup
+1. Open Google Sheets → *Extensions → App Script*.  
+2. Paste the contents of `App Script.txt` provided in this repo.  
+3. Deploy the script as a **web app** with access to *Anyone with the link*.  
+4. Copy the web app URL and update it inside your NodeMCU sketch (where data is sent).  
+
+---
+
+## ▶️ Usage
+1. Power the NodeMCU and peripherals.  
+2. LCD will display: **"Scan your card"**.  
+3. Place an RFID card near the reader.  
+ - ✅ If recognized → LCD shows "Welcome [Name]" + single beep.  
+ - ❌ If unknown → LCD shows "Unknown" + 3 beeps.  
+4. Attendance data is automatically logged in Google Sheets.  
+
+---
+
+## 📊 Features
+- Secure RFID-based identification  
+- Real-time attendance logging into Google Sheets  
+- LCD feedback for user interaction  
+- Audio feedback (buzzer) for known/unknown cards  
+- Easily expandable for multiple users  
+
+---
+
+## 📂 Project File Structure
+
+├── Smart_Attendance.ino       # Main Arduino sketch ├── App Script.txt             # Google Sheets script for data logging ├── README.md                  # Documentation
+
+---
+
+## 🛠️ Future Improvements
+- Add Wi-Fi auto-reconnect functionality  
+- Use Firebase for cloud storage instead of Sheets  
+- Create Android app for attendance monitoring  
+- Encrypt UID transmission for better security  
+
+---
+
+## 🤝 Contributing
+Contributions are welcome! Please fork this repo and submit a pull request.  
+
+---
+
+## 📜 License
+This project is licensed under the **MIT License** – feel free to use and modify it.
+
+---
+
+## 👨‍💻 Author
+**Shad Ebny Wahid**  
+- 📧 Email: shadebnywahid@gmail.com  
+- 🌐 [Facebook](https://www.facebook.com/saadw50) | [Twitter](https://twitter.com/saadw50) | [YouTube](https://www.youtube.com/c/eee_bd_by_saad)
+
+
 
 <h1 align="center">Hi 👋, I'm Shad Ebny Wahid</h1>
 <h3 align="center">A BSc Student in Electrical and Electronic Engineering in Jamalpur Science and Technology University, Bangladesh</h3>
